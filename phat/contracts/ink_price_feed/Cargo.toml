@@ -22,8 +22,6 @@ pink-web3 = { version = "0.22.0", default-features = false, features = ["pink", 
 
 phat_offchain_rollup = { path = "../../crates/rollup", default-features = false, features = ["ink"] }
 
-subrpc = { package = "pink-subrpc", version = "0.6.0", default-features = false }
-
 hex = { version = "0.4", default-features = false }
 
 [dev-dependencies]
@@ -47,7 +45,6 @@ std = [
     "scale-info/std",
     "phat_offchain_rollup/std",
     "pink-extension/std",
-    "subrpc/std",
     "pink-json/std",
     "pink-web3/std",
 ]
