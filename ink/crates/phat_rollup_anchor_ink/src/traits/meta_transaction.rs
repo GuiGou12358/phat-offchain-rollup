@@ -17,6 +17,7 @@ pub enum MetaTransactionError {
     PublicKeyNotMatch,
     PublicKeyIncorrect,
     RollupAnchorError(RollupAnchorError),
+    NonceOverflow,
 }
 
 /// convertor from RollupAnchorError to MetaTxError
@@ -105,7 +106,10 @@ pub trait MetaTransaction: Storage<Data> + EventBroadcaster + RollupAnchor {
         // verify the signature
         self.verify(request, signature)?;
         // update the nonce
-        let nonce = request.nonce + 1;
+        let nonce = request
+            .nonce
+            .checked_add(1)
+            .ok_or(MetaTransactionError::NonceOverflow)?;
         self.data::<Data>().nonces.insert(&request.from, &nonce);
         Ok(())
     }

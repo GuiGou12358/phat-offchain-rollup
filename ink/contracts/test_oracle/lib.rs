@@ -222,7 +222,7 @@ pub mod test_oracle {
                     .get(message.trading_pair_id)
                     .unwrap_or_default();
                 trading_pair.value = message.price.unwrap_or_default();
-                trading_pair.nb_updates += 1;
+                trading_pair.nb_updates = trading_pair.nb_updates.checked_add(1).unwrap_or(0);
                 trading_pair.last_update = self.env().block_timestamp();
                 self.trading_pairs
                     .insert(message.trading_pair_id, &trading_pair);

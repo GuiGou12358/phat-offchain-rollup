@@ -44,6 +44,7 @@ pub enum RollupAnchorError {
     FailedToDecode,
     UnsupportedAction,
     AccessControlError(AccessControlError),
+    QueueIndexOverflow,
 }
 
 /// convertor from AccessControlError to RollupAnchorError
@@ -120,7 +121,10 @@ pub trait RollupAnchor:
         let encoded_value = data.encode();
         self.set_value(&key, Some(&encoded_value));
 
-        self.set_queue_tail(id + 1);
+        self.set_queue_tail(
+            id.checked_add(1)
+                .ok_or(RollupAnchorError::QueueIndexOverflow)?,
+        );
         self.emit_event_message_queued(id, encoded_value);
 
         Ok(id)
