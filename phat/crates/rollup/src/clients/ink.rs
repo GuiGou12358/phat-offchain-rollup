@@ -83,8 +83,8 @@ impl<'a> BumpVersion for InkSnapshot<'a> {
     fn bump_version(&self, version: Option<Vec<u8>>) -> kv_session::Result<Vec<u8>> {
         match version {
             Some(v) => {
-                let ver = u32::decode(&mut &v[..]).or(Err(kv_session::Error::FailedToDecode))?;
-                Ok((ver + 1).encode())
+                let ver = u32::decode(&mut &v[..]).or(Err(kv_session::Error::FailedToDecode))?.checked_add(1).ok_or(kv_session::Error::FailedToDecode)?;
+                Ok(ver.encode())
             }
             None => Ok(1u32.encode()),
         }

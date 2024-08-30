@@ -37,7 +37,7 @@ impl<P: Platform> Locks<P> {
         let id = self.num_locks;
         self.lock_ids.insert(lock.to_string(), id);
         self.deps.insert(id, parent_id);
-        self.num_locks += 1;
+        self.num_locks = self.num_locks.checked_add(1).ok_or(Error::LockVersionOverflow)? ;
         Ok(id)
     }
 
@@ -70,8 +70,8 @@ impl<P: Platform> Locks<P> {
         // Update writing versions
         let mut i = Some(id);
         while let Some(id) = i {
-            let v = reader.get_version(id)?;
-            tx.updates.push((Self::key(id), Some(Self::value(v + 1))));
+            let v = reader.get_version(id)?.checked_add(1).ok_or(Error::LockVersionOverflow)?;
+            tx.updates.push((Self::key(id), Some(Self::value(v ))));
             i = self.deps.get(&id).cloned();
         }
         Ok(())
