@@ -91,6 +91,7 @@ mod ink_price_feed {
         FailedToDecode,
         InvalidRequest,
         FailedToCallRollup,
+        AddOverflow,
     }
 
     type Result<T> = core::result::Result<T, Error>;
@@ -243,7 +244,7 @@ mod ink_price_feed {
             let fp = Fp::from_str(parsed.token0.token1)
                 .log_err("failed to parse real number")
                 .or(Err(Error::FailedToDecode))?;
-            let f = fp * Fp::from_num(1_000_000_000_000_000_000u128);
+            let f = fp.checked_mul(Fp::from_num(1_000_000_000_000_000_000u128)).ok_or(Error::AddOverflow)?;
             Ok(f.to_num())
         }
 
