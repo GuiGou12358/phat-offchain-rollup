@@ -39,7 +39,7 @@ impl<'a> InkSnapshot<'a> {
         call_id: u8,
         contract_id: &'a ContractId,
     ) -> Result<Self> {
-        let hash = subrpc::get_block_hash(rpc, None).or(Err(Error::FailedToGetBlockHash))?;
+        let hash = subrpc::get_finalized_head(rpc).or(Err(Error::FailedToGetBlockHash))?;
         Ok(InkSnapshot {
             rpc,
             pallet_id,
